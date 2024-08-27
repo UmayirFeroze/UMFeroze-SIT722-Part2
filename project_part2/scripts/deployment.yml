@@ -1,36 +1,40 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: book-catalog
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: book-catalog
-  template:
-    metadata:
-      labels:
-        app: book-catalog
-    spec:
-      containers:
-      - name: book-catalog
-        image: book-catalog:latest
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 8000
-        env:
-        - name: DATABASE_URL
-          value: "postgresql://part2_4ujm_user:7Ui4eX2eAonUZsZ90SvpZzYMIVQemRFS@dpg-cr70avbqf0us73a4spf0-a.oregon-postgres.render.com/part2_4ujm"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: book-catalog-service
-spec:
-  selector:
-    app: book-catalog
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8000
-  type: LoadBalancer
+# Deployment configuration
+apiVersion: apps/v1                 # Specifies the API version for Kubernetes Deployments
+kind: Deployment                    # Indicates that this is a Deployment resource
+metadata:                           # Meta data of deployment
+  name: book-catalog                # Sets the name of the Deployment
+spec:                               # Specs of deployment
+  replicas: 1                       # Specify the number of pod replicas to maintain
+  selector:                         # Configure Selector
+    matchLabels:                    # Meta labels
+      app: book-catalog             # Defines how the Deployment finds which Pods to manage
+  template:                         # Define template
+    metadata:                       # Define template metadata
+      labels:                       # Define template labels
+        app: book-catalog           # Label applied to the Pods created by this template
+    spec:                           # Define container specs
+      containers:                   # Define containers
+      - name: book-catalog          # Name of the container within the Pod
+        image: book-catalog:latest  # Docker image to use for the container
+        imagePullPolicy: Never      # Tells Kubernetes to never try to pull the image and use local one
+        ports:                      # Define ports
+        - containerPort: 8000       # Port that the container exposes
+        env:                        # Set environment variables
+        - name: DATABASE_URL        # Environment variable name
+          value: "postgresql://part2_4ujm_user:7Ui4eX2eAonUZsZ90SvpZzYMIVQemRFS@dpg-cr70avbqf0us73a4spf0-a.oregon-postgres.render.com/part2_4ujm"  # Value of the environment variable
+
+---  # Separator between Kubernetes resources in the same file
+
+# Service configuration
+apiVersion: v1                      # Specify the API version for Kubernetes Services
+kind: Service                       # Indicates that this is a Service resource
+metadata:                           # Define service metadata
+  name: book-catalog-service        # Sets the name of the Service
+spec:                               # Define service specs
+  selector:                         # Define selector
+    app: book-catalog               # Defines which Pods are targeted by this Service
+  ports:                            # Define ports                    
+    - protocol: TCP                 # Specify the protocol used for this port
+      port: 80                      # The port the Service listens on
+      targetPort: 8000              # The port to forward to on the Pod
+  type: LoadBalancer                # Specify the type of Service, making it externally accessible
